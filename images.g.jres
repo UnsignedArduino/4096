@@ -1,0 +1,12 @@
+{
+    "image1": {
+        "data": "hwQQABAAAADAzMzMzMzMDMzd3d3d3d3M3N3d3d3d3c3c3d3d3d3dzdzd3d3d3d3N3N3d3d3d3c3c3d3d3d3dzdzd3d3d3d3N3N3d3d3d3c3c3d3d3d3dzdzd3d3d3d3N3N3d3d3d3c3c3d3d3d3dzdzd3d3d3d3NzN3d3d3d3czAzMzMzMzMDA==",
+        "mimeType": "image/x-mkcd-f4",
+        "displayName": "tile"
+    },
+    "*": {
+        "mimeType": "image/x-mkcd-f4",
+        "dataEncoding": "base64",
+        "namespace": "myImages"
+    }
+}
