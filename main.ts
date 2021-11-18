@@ -1,8 +1,39 @@
+function move_right () {
+    move_rows([
+    5,
+    4,
+    3,
+    2,
+    1
+    ], CollisionDirection.Right)
+}
+controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+    move_up()
+})
+function move_cols (cols: any[], direction: number) {
+    for (let index of cols) {
+        for (let tile of grid.colSprites(index)) {
+            for (let other_tile of grid.allSprites()) {
+                if (sprites.readDataNumber(tile, "value") == sprites.readDataNumber(other_tile, "value")) {
+                    tiles.setWallAt(tiles.locationOfSprite(other_tile), false)
+                } else {
+                    tiles.setWallAt(tiles.locationOfSprite(other_tile), true)
+                }
+            }
+            if (!(tiles.tileIsWall(tiles.locationInDirection(tiles.locationOfSprite(tile), direction)))) {
+                grid.place(tile, tiles.locationInDirection(tiles.locationOfSprite(tile), direction))
+            }
+        }
+    }
+}
 function prepare_tilemap () {
     scene.setBackgroundColor(13)
     tiles.loadMap(tiles.createMap(tilemap`screen`))
     scene.centerCameraAt(scene.cameraProperty(CameraProperty.X), scene.cameraProperty(CameraProperty.Y) + tiles.tileWidth() / 4)
 }
+controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
+    move_left()
+})
 function get_empty_spot () {
     location = tiles.getTileLocation(randint(1, 6), randint(1, 6))
     while (grid.getSprites(location).length > 0) {
@@ -10,6 +41,54 @@ function get_empty_spot () {
     }
     return location
 }
+function move_rows (rows: any[], direction: number) {
+    for (let index of rows) {
+        for (let tile of grid.rowSprites(index)) {
+            for (let other_tile of grid.allSprites()) {
+                if (sprites.readDataNumber(tile, "value") == sprites.readDataNumber(other_tile, "value")) {
+                    tiles.setWallAt(tiles.locationOfSprite(other_tile), false)
+                } else {
+                    tiles.setWallAt(tiles.locationOfSprite(other_tile), true)
+                }
+            }
+            if (!(tiles.tileIsWall(tiles.locationInDirection(tiles.locationOfSprite(tile), direction)))) {
+                grid.place(tile, tiles.locationInDirection(tiles.locationOfSprite(tile), direction))
+            }
+        }
+    }
+}
+function move_left () {
+    move_cols([
+    2,
+    3,
+    4,
+    5,
+    6
+    ], CollisionDirection.Left)
+}
+controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
+    move_right()
+})
+function move_down () {
+    move_rows([
+    5,
+    4,
+    3,
+    2,
+    1
+    ], CollisionDirection.Bottom)
+}
+controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
+    move_down()
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Player, function (sprite, otherSprite) {
+    if (sprites.readDataNumber(sprite, "value") == sprites.readDataNumber(otherSprite, "value")) {
+        sprites.changeDataNumberBy(sprite, "value", sprites.readDataNumber(otherSprite, "value"))
+        sprite.setImage(assets.image`tile`)
+        print_num(sprite.image, sprites.readDataNumber(sprite, "value"))
+        otherSprite.destroy()
+    }
+})
 function has_empty_spot () {
     for (let index = 0; index <= 5; index++) {
         if (grid.rowSprites(index + 1).length < 6) {
@@ -45,6 +124,15 @@ function print_num (image_ptr: Image, num: number) {
             num_y += 6
         }
     }
+}
+function move_up () {
+    move_rows([
+    2,
+    3,
+    4,
+    5,
+    6
+    ], CollisionDirection.Top)
 }
 let num_y = 0
 let num_as_str = ""
