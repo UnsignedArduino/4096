@@ -84,11 +84,14 @@ controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Player, function (sprite, otherSprite) {
     if (sprites.readDataNumber(sprite, "value") == sprites.readDataNumber(otherSprite, "value")) {
         sprites.changeDataNumberBy(sprite, "value", sprites.readDataNumber(otherSprite, "value"))
-        sprite.setImage(assets.image`tile`)
-        print_num(sprite.image, sprites.readDataNumber(sprite, "value"))
+        update_tile_image(sprite)
         otherSprite.destroy()
     }
 })
+function update_tile_image (sprite: Sprite) {
+    sprite.setImage(assets.image`tile`)
+    print_num(sprite.image, sprites.readDataNumber(sprite, "value"))
+}
 function has_empty_spot () {
     for (let index = 0; index <= 5; index++) {
         if (grid.rowSprites(index + 1).length < 6) {
