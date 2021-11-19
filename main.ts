@@ -26,6 +26,19 @@ function move_cols (cols: any[], direction: number) {
         }
     }
 }
+function num_to_color (num: number) {
+    if (num <= 4) {
+        return images.colorBlock(13)
+    } else if (num <= 16) {
+        return images.colorBlock(5)
+    } else if (num <= 64) {
+        return images.colorBlock(4)
+    } else if (num <= 256) {
+        return images.colorBlock(2)
+    } else {
+        return images.colorBlock(3)
+    }
+}
 function prepare_tilemap () {
     scene.setBackgroundColor(13)
     tiles.loadMap(tiles.createMap(tilemap`screen`))
@@ -89,8 +102,9 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Player, function (sprite, otherS
     }
 })
 function update_tile_image (sprite: Sprite) {
-    sprite.setImage(assets.image`tile`)
+    sprite.setImage(assets.image`tile`.clone())
     print_num(sprite.image, sprites.readDataNumber(sprite, "value"))
+    sprite.image.replace(13, num_to_color(sprites.readDataNumber(sprite, "value")))
 }
 function has_empty_spot () {
     for (let index = 0; index <= 5; index++) {

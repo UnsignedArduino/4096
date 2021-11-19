@@ -10,7 +10,8 @@
         "arcade-story": "github:microsoft/arcade-storytelling#v1.0.3",
         "Stats": "github:UnsignedArduino/Stats#9102333e1ca6cbaf8a979ceb252274b2f09b9005",
         "arcade-text": "github:microsoft/arcade-text#v1.3.0",
-        "arcade-sprite-util": "github:jwunderl/arcade-sprite-util#v0.2.4"
+        "arcade-sprite-util": "github:jwunderl/arcade-sprite-util#v0.2.4",
+        "ColorBlock": "github:UnsignedArduino/ColorBlock#ac7b9500e40045cf1ddd8c5b7481d11bcb317f5f"
     },
     "files": [
         "main.blocks",
