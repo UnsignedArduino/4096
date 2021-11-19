@@ -70,6 +70,14 @@ function move_rows (rows: any[], direction: number) {
         }
     }
 }
+info.onCountdownEnd(function () {
+    if (has_empty_spot()) {
+        add_number(2)
+    } else {
+        game.over(false)
+    }
+    info.startCountdown(2)
+})
 function move_left () {
     move_cols([
     2,
@@ -97,6 +105,7 @@ controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Player, function (sprite, otherSprite) {
     if (sprites.readDataNumber(sprite, "value") == sprites.readDataNumber(otherSprite, "value")) {
         sprites.changeDataNumberBy(sprite, "value", sprites.readDataNumber(otherSprite, "value"))
+        info.changeScoreBy(sprites.readDataNumber(otherSprite, "value"))
         update_tile_image(sprite)
         otherSprite.destroy()
     }
@@ -161,11 +170,5 @@ prepare_tilemap()
 for (let index = 0; index < 2; index++) {
     add_number(2)
 }
-forever(function () {
-    if (has_empty_spot()) {
-        add_number(2)
-    } else {
-        game.over(false)
-    }
-    pause(2000)
-})
+info.startCountdown(2)
+info.setScore(0)
