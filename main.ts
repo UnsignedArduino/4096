@@ -92,7 +92,7 @@ info.onCountdownEnd(function () {
         } else {
             game.over(false)
         }
-        time_left = Math.max(time_left - 0.01, 0.5)
+        time_left = Math.max(time_left - 0.01, 0.2)
         info.startCountdown(time_left)
     })
 })
