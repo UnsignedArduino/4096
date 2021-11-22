@@ -1,16 +1,20 @@
 function move_right () {
-    move_rows([
+    while (move_cols([
     5,
     4,
     3,
     2,
     1
-    ], CollisionDirection.Right)
+    ], CollisionDirection.Right)) {
+    	
+    }
 }
 controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
     move_up()
 })
 function move_cols (cols: any[], direction: number) {
+    moving = true
+    has_moved = false
     for (let index of cols) {
         for (let tile of grid.colSprites(index)) {
             for (let other_tile of grid.allSprites()) {
@@ -22,9 +26,12 @@ function move_cols (cols: any[], direction: number) {
             }
             if (!(tiles.tileIsWall(tiles.locationInDirection(tiles.locationOfSprite(tile), direction)))) {
                 grid.place(tile, tiles.locationInDirection(tiles.locationOfSprite(tile), direction))
+                has_moved = true
             }
         }
     }
+    moving = false
+    return has_moved
 }
 function num_to_color (num: number) {
     if (num <= 4) {
@@ -55,6 +62,8 @@ function get_empty_spot () {
     return location
 }
 function move_rows (rows: any[], direction: number) {
+    moving = true
+    has_moved = false
     for (let index of rows) {
         for (let tile of grid.rowSprites(index)) {
             for (let other_tile of grid.allSprites()) {
@@ -66,38 +75,56 @@ function move_rows (rows: any[], direction: number) {
             }
             if (!(tiles.tileIsWall(tiles.locationInDirection(tiles.locationOfSprite(tile), direction)))) {
                 grid.place(tile, tiles.locationInDirection(tiles.locationOfSprite(tile), direction))
+                has_moved = true
             }
         }
     }
+    moving = false
+    return has_moved
 }
 info.onCountdownEnd(function () {
-    if (has_empty_spot()) {
-        add_number(2)
-    } else {
-        game.over(false)
-    }
-    info.startCountdown(2)
+    timer.background(function () {
+        while (moving) {
+            pause(100)
+        }
+        if (has_empty_spot()) {
+            add_number(2)
+        } else {
+            game.over(false)
+        }
+        time_left = Math.max(time_left - 0.01, 0.5)
+        info.startCountdown(time_left)
+    })
 })
 function move_left () {
-    move_cols([
+    while (move_cols([
     2,
     3,
     4,
     5,
     6
-    ], CollisionDirection.Left)
+    ], CollisionDirection.Left)) {
+    	
+    }
+}
+function all_tiles_say_value () {
+    for (let tile of grid.allSprites()) {
+        tile.sayText("" + sprites.readDataNumber(tile, "value"))
+    }
 }
 controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
     move_right()
 })
 function move_down () {
-    move_rows([
+    while (move_rows([
     5,
     4,
     3,
     2,
     1
-    ], CollisionDirection.Bottom)
+    ], CollisionDirection.Bottom)) {
+    	
+    }
 }
 controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
     move_down()
@@ -152,23 +179,30 @@ function print_num (image_ptr: Image, num: number) {
     }
 }
 function move_up () {
-    move_rows([
+    while (move_rows([
     2,
     3,
     4,
     5,
     6
-    ], CollisionDirection.Top)
+    ], CollisionDirection.Top)) {
+    	
+    }
 }
 let num_y = 0
 let num_as_str = ""
 let text_sprite: TextSprite = null
 let tile: Sprite = null
 let location: tiles.Location = null
+let has_moved = false
+let time_left = 0
+let moving = false
 stats.turnStats(true)
 prepare_tilemap()
 for (let index = 0; index < 2; index++) {
     add_number(2)
 }
-info.startCountdown(2)
+moving = false
+time_left = 1
+info.startCountdown(time_left)
 info.setScore(0)
