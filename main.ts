@@ -10,7 +10,9 @@ function move_right () {
     }
 }
 controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
-    move_up()
+    if (!(moving)) {
+        move_up()
+    }
 })
 function move_cols (cols: any[], direction: number) {
     moving = true
@@ -29,6 +31,7 @@ function move_cols (cols: any[], direction: number) {
                 has_moved = true
             }
         }
+        pause(1)
     }
     moving = false
     return has_moved
@@ -52,7 +55,9 @@ function prepare_tilemap () {
     scene.centerCameraAt(scene.cameraProperty(CameraProperty.X), scene.cameraProperty(CameraProperty.Y) + tiles.tileWidth() / 4)
 }
 controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
-    move_left()
+    if (!(moving)) {
+        move_left()
+    }
 })
 function get_empty_spot () {
     location = tiles.getTileLocation(randint(1, 6), randint(1, 6))
@@ -78,6 +83,7 @@ function move_rows (rows: any[], direction: number) {
                 has_moved = true
             }
         }
+        pause(1)
     }
     moving = false
     return has_moved
@@ -118,7 +124,9 @@ function all_tiles_say_value () {
     }
 }
 controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
-    move_right()
+    if (!(moving)) {
+        move_right()
+    }
 })
 function move_down () {
     while (move_rows([
@@ -132,7 +140,9 @@ function move_down () {
     }
 }
 controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
-    move_down()
+    if (!(moving)) {
+        move_down()
+    }
 })
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Player, function (sprite, otherSprite) {
     if (sprites.readDataNumber(sprite, "value") == sprites.readDataNumber(otherSprite, "value")) {
@@ -140,6 +150,9 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Player, function (sprite, otherS
         info.changeScoreBy(sprites.readDataNumber(otherSprite, "value"))
         update_tile_image(sprite)
         otherSprite.destroy()
+        if (sprites.readDataNumber(sprite, "value") >= 4096) {
+            game.over(true)
+        }
     }
 })
 function add_barrier () {
