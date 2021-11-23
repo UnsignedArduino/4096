@@ -56,7 +56,7 @@ controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
 })
 function get_empty_spot () {
     location = tiles.getTileLocation(randint(1, 6), randint(1, 6))
-    while (grid.getSprites(location).length > 0) {
+    while (grid.getSprites(location).length > 0 || tiles.tileIsWall(location)) {
         location = tiles.getTileLocation(randint(1, 6), randint(1, 6))
     }
     return location
@@ -92,7 +92,12 @@ info.onCountdownEnd(function () {
         } else {
             game.over(false)
         }
-        time_left = Math.max(time_left - 0.01, 0.2)
+        if (has_empty_spot()) {
+            if (barrier_count < max_barriers && Math.percentChance(barrier_percent)) {
+                add_barrier()
+            }
+        }
+        time_left = Math.max(time_left - 0.05, 0.25)
         info.startCountdown(time_left)
     })
 })
@@ -137,15 +142,26 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Player, function (sprite, otherS
         otherSprite.destroy()
     }
 })
+function add_barrier () {
+    location = get_empty_spot()
+    tiles.setWallAt(location, true)
+    tiles.setTileAt(location, assets.tile`barrier`)
+    barrier_count += 1
+}
 function update_tile_image (sprite: Sprite) {
     sprite.setImage(assets.image`tile`.clone())
     print_num(sprite.image, sprites.readDataNumber(sprite, "value"))
     sprite.image.replace(13, num_to_color(sprites.readDataNumber(sprite, "value")))
 }
 function has_empty_spot () {
-    for (let index = 0; index <= 5; index++) {
-        if (grid.rowSprites(index + 1).length < 6) {
-            return true
+    for (let row = 0; row <= 5; row++) {
+        for (let col = 0; col <= 5; col++) {
+            if (tiles.tileIsWall(tiles.getTileLocation(col, row))) {
+                continue;
+            }
+            if (grid.getSprites(tiles.getTileLocation(col, row)).length == 0) {
+                return true
+            }
         }
     }
     return false
@@ -195,14 +211,21 @@ let text_sprite: TextSprite = null
 let tile: Sprite = null
 let location: tiles.Location = null
 let has_moved = false
+let max_barriers = 0
+let barrier_percent = 0
 let time_left = 0
 let moving = false
+let barrier_count = 0
 stats.turnStats(true)
 prepare_tilemap()
-for (let index = 0; index < 2; index++) {
-    add_number(2)
-}
+barrier_count = 0
 moving = false
 time_left = 1
+barrier_percent = 2
+max_barriers = 6
+for (let index = 0; index < 2; index++) {
+    add_number(2)
+    add_barrier()
+}
 info.startCountdown(time_left)
 info.setScore(0)

@@ -27,6 +27,12 @@
         "tilemapTile": true,
         "displayName": "alt_tile"
     },
+    "tile4": {
+        "data": "hwQQABAAAADMzMzMzMzMzPz////////P/P///////8/8////////z/z////////P/P///////8/8////////z/z////////P/P///////8/8////////z/z////////P/P///////8/8////////z/z////////P/P///////8/MzMzMzMzMzA==",
+        "mimeType": "image/x-mkcd-f4",
+        "tilemapTile": true,
+        "displayName": "barrier"
+    },
     "level1": {
         "id": "level1",
         "mimeType": "application/mkcd-tilemap",
@@ -53,7 +59,8 @@
         "tileset": [
             "myTiles.transparency16",
             "myTiles.tile2",
-            "myTiles.tile3"
+            "myTiles.tile3",
+            "myTiles.tile4"
         ],
         "displayName": "screen"
     },
