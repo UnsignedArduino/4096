@@ -10,10 +10,23 @@ function move_right () {
     }
 }
 controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+    unpause()
     if (!(moving)) {
         move_up()
     }
 })
+controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
+    pause2()
+})
+function unwall () {
+    for (let row = 0; row <= 5; row++) {
+        for (let col = 0; col <= 5; col++) {
+            if (!(tiles.tileAtLocationEquals(tiles.getTileLocation(col + 1, row + 1), assets.tile`barrier`))) {
+                tiles.setWallAt(tiles.getTileLocation(col + 1, row + 1), false)
+            }
+        }
+    }
+}
 function move_cols (cols: any[], direction: number) {
     moving = true
     has_moved = false
@@ -33,8 +46,13 @@ function move_cols (cols: any[], direction: number) {
         }
         pause(1)
     }
+    unwall()
     moving = false
     return has_moved
+}
+function set_score_to (s: number) {
+    score = s
+    update_score()
 }
 function num_to_color (num: number) {
     if (num <= 4) {
@@ -55,6 +73,7 @@ function prepare_tilemap () {
     scene.centerCameraAt(scene.cameraProperty(CameraProperty.X), scene.cameraProperty(CameraProperty.Y) + tiles.tileWidth() / 4)
 }
 controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
+    unpause()
     if (!(moving)) {
         move_left()
     }
@@ -85,28 +104,41 @@ function move_rows (rows: any[], direction: number) {
         }
         pause(1)
     }
+    unwall()
     moving = false
     return has_moved
 }
-info.onCountdownEnd(function () {
-    timer.background(function () {
-        while (moving) {
-            pause(100)
-        }
-        if (has_empty_spot()) {
-            add_number(2)
-        } else {
-            game.over(false)
-        }
-        if (has_empty_spot()) {
-            if (barrier_count < max_barriers && Math.percentChance(barrier_percent)) {
-                add_barrier()
-            }
-        }
-        time_left = Math.max(time_left - 0.05, 0.25)
-        info.startCountdown(time_left)
-    })
-})
+function pause2 () {
+    if (paused) {
+        return
+    }
+    paused = true
+    pause_sprite = textsprite.create("Paused", 1, 15)
+    pause_sprite.setPosition(scene.screenWidth() / 2, scene.screenHeight() / 2)
+    pause_sprite.z = 10
+    pause_sprite.setFlag(SpriteFlag.Ghost, true)
+    pause_sprite.setBorder(1, 15, 1)
+}
+function update_score () {
+    if (!(label_score_sprite)) {
+        label_score_sprite = textsprite.create("Score: ", 0, 15)
+        label_score_sprite.setFlag(SpriteFlag.Ghost, true)
+        label_score_sprite.top = tiles.tileWidth() * 1
+        label_score_sprite.left = tiles.tileWidth() * 7.25
+        score_sprite = textsprite.create("", 0, 15)
+        score_sprite.setFlag(SpriteFlag.Ghost, true)
+        score_sprite.top = tiles.tileWidth() * 1.5
+        score_sprite.left = tiles.tileWidth() * 7.25
+    }
+    score_sprite.setText("" + score)
+}
+function unpause () {
+    if (!(paused)) {
+        return
+    }
+    paused = false
+    pause_sprite.destroy()
+}
 function move_left () {
     while (move_cols([
     2,
@@ -124,6 +156,7 @@ function all_tiles_say_value () {
     }
 }
 controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
+    unpause()
     if (!(moving)) {
         move_right()
     }
@@ -139,7 +172,12 @@ function move_down () {
     	
     }
 }
+function change_score_by (s: number) {
+    score += s
+    update_score()
+}
 controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
+    unpause()
     if (!(moving)) {
         move_down()
     }
@@ -147,10 +185,11 @@ controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Player, function (sprite, otherSprite) {
     if (sprites.readDataNumber(sprite, "value") == sprites.readDataNumber(otherSprite, "value")) {
         sprites.changeDataNumberBy(sprite, "value", sprites.readDataNumber(otherSprite, "value"))
-        info.changeScoreBy(sprites.readDataNumber(otherSprite, "value"))
+        change_score_by(sprites.readDataNumber(otherSprite, "value"))
         update_tile_image(sprite)
         otherSprite.destroy()
         if (sprites.readDataNumber(sprite, "value") >= 4096) {
+            info.setScore(score)
             game.over(true)
         }
     }
@@ -169,10 +208,10 @@ function update_tile_image (sprite: Sprite) {
 function has_empty_spot () {
     for (let row = 0; row <= 5; row++) {
         for (let col = 0; col <= 5; col++) {
-            if (tiles.tileIsWall(tiles.getTileLocation(col, row))) {
+            if (tiles.tileIsWall(tiles.getTileLocation(col + 1, row + 1))) {
                 continue;
             }
-            if (grid.getSprites(tiles.getTileLocation(col, row)).length == 0) {
+            if (grid.getSprites(tiles.getTileLocation(col + 1, row + 1)).length == 0) {
                 return true
             }
         }
@@ -222,23 +261,43 @@ let num_y = 0
 let num_as_str = ""
 let text_sprite: TextSprite = null
 let tile: Sprite = null
+let score_sprite: TextSprite = null
+let label_score_sprite: TextSprite = null
+let pause_sprite: TextSprite = null
 let location: tiles.Location = null
 let has_moved = false
-let max_barriers = 0
-let barrier_percent = 0
-let time_left = 0
+let paused = false
+let score = 0
 let moving = false
-let barrier_count = 0
 stats.turnStats(true)
 prepare_tilemap()
-barrier_count = 0
+let barrier_count = 0
 moving = false
-time_left = 1
-barrier_percent = 2
-max_barriers = 6
+let time_left = 1000
+let barrier_percent = 2
+let max_barriers = 6
+score = 0
+paused = false
 for (let index = 0; index < 2; index++) {
     add_number(2)
     add_barrier()
 }
-info.startCountdown(time_left)
-info.setScore(0)
+set_score_to(0)
+forever(function () {
+    while (moving || paused) {
+        pause(1)
+    }
+    if (has_empty_spot()) {
+        add_number(2)
+    } else {
+        info.setScore(score)
+        game.over(false)
+    }
+    if (has_empty_spot()) {
+        if (barrier_count < max_barriers && Math.percentChance(barrier_percent)) {
+            add_barrier()
+        }
+    }
+    time_left = Math.max(time_left - 5, 200)
+    pause(time_left)
+})
