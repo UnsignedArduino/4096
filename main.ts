@@ -15,6 +15,11 @@ controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
         move_up()
     }
 })
+function add_barrier_remover () {
+    tile = sprites.create(assets.image`barrier_remover`, SpriteKind.Player)
+    grid.place(tile, get_empty_spot())
+    sprites.setDataNumber(tile, "value", -1)
+}
 controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
     pause2()
 })
@@ -172,6 +177,12 @@ function move_down () {
     	
     }
 }
+function remove_barrier () {
+    location = tiles.getTilesByType(assets.tile`barrier`)._pickRandom()
+    tiles.setWallAt(location, false)
+    tiles.setTileAt(location, assets.tile`tile0`)
+    barrier_count += -1
+}
 function change_score_by (s: number) {
     score += s
     update_score()
@@ -182,16 +193,27 @@ controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
         move_down()
     }
 })
+function has_barriers () {
+    return tiles.getTilesByType(assets.tile`barrier`).length > 0
+}
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Player, function (sprite, otherSprite) {
     if (sprites.readDataNumber(sprite, "value") == sprites.readDataNumber(otherSprite, "value")) {
-        sprites.changeDataNumberBy(sprite, "value", sprites.readDataNumber(otherSprite, "value"))
-        change_score_by(sprites.readDataNumber(otherSprite, "value"))
-        update_tile_image(sprite)
-        otherSprite.destroy()
-        if (sprites.readDataNumber(sprite, "value") >= 4096) {
-            info.setScore(score)
-            game.over(true)
+        if (sprites.readDataNumber(sprite, "value") == -1) {
+            sprite.destroy()
+            if (has_barriers()) {
+                remove_barrier()
+            }
+            change_score_by(25)
+        } else {
+            sprites.changeDataNumberBy(sprite, "value", sprites.readDataNumber(otherSprite, "value"))
+            change_score_by(sprites.readDataNumber(otherSprite, "value"))
+            update_tile_image(sprite)
+            if (sprites.readDataNumber(sprite, "value") >= 4096) {
+                info.setScore(score)
+                game.over(true)
+            }
         }
+        otherSprite.destroy()
     }
 })
 function add_barrier () {
@@ -260,12 +282,12 @@ function move_up () {
 let num_y = 0
 let num_as_str = ""
 let text_sprite: TextSprite = null
-let tile: Sprite = null
 let score_sprite: TextSprite = null
 let label_score_sprite: TextSprite = null
 let pause_sprite: TextSprite = null
 let location: tiles.Location = null
 let has_moved = false
+let tile: Sprite = null
 let paused = false
 let score = 0
 let moving = false
@@ -275,6 +297,7 @@ let barrier_count = 0
 moving = false
 let time_left = 1000
 let barrier_percent = 2
+let barrier_remove_percent = 4
 let max_barriers = 6
 score = 0
 paused = false
@@ -288,7 +311,11 @@ forever(function () {
         pause(1)
     }
     if (has_empty_spot()) {
-        add_number(2)
+        if (Math.percentChance(barrier_remove_percent) && has_barriers()) {
+            add_barrier_remover()
+        } else {
+            add_number(2)
+        }
     } else {
         info.setScore(score)
         game.over(false)

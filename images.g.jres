@@ -4,6 +4,11 @@
         "mimeType": "image/x-mkcd-f4",
         "displayName": "tile"
     },
+    "image2": {
+        "data": "hwQQABAAAADAzMzMzMzMDMzd3d3d3d3M3C0iIiIi0s3cIiIiIiIizdwiIt3d3SLN3CIi8v/fIs3cIi0i/98izdwi/SLy3yLN3CL9LyLfIs3cIv3/ItIizdwi/f8vIiLN3CLd3d0iIs3cIiIiIiIizdwtIiIiItLNzN3d3d3d3czAzMzMzMzMDA==",
+        "mimeType": "image/x-mkcd-f4",
+        "displayName": "barrier_remover"
+    },
     "*": {
         "mimeType": "image/x-mkcd-f4",
         "dataEncoding": "base64",
