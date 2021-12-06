@@ -32,6 +32,16 @@ function unwall () {
         }
     }
 }
+function add_200_pointer () {
+    tile = sprites.create(assets.image`point200_tile`, SpriteKind.Player)
+    grid.place(tile, get_empty_spot())
+    sprites.setDataNumber(tile, "value", -4)
+}
+function add_100_pointer () {
+    tile = sprites.create(assets.image`point100_tile`, SpriteKind.Player)
+    grid.place(tile, get_empty_spot())
+    sprites.setDataNumber(tile, "value", -3)
+}
 function move_cols (cols: any[], direction: number) {
     moving = true
     has_moved = false
@@ -196,6 +206,11 @@ controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
 function has_barriers () {
     return tiles.getTilesByType(assets.tile`barrier`).length > 0
 }
+function add_50_pointer () {
+    tile = sprites.create(assets.image`point50_tile`, SpriteKind.Player)
+    grid.place(tile, get_empty_spot())
+    sprites.setDataNumber(tile, "value", -2)
+}
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Player, function (sprite, otherSprite) {
     if (sprites.readDataNumber(sprite, "value") == sprites.readDataNumber(otherSprite, "value")) {
         if (sprites.readDataNumber(sprite, "value") == -1) {
@@ -204,6 +219,15 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Player, function (sprite, otherS
                 remove_barrier()
             }
             change_score_by(25)
+        } else if (sprites.readDataNumber(sprite, "value") == -2) {
+            sprite.destroy()
+            change_score_by(50)
+        } else if (sprites.readDataNumber(sprite, "value") == -3) {
+            sprite.destroy()
+            change_score_by(100)
+        } else if (sprites.readDataNumber(sprite, "value") == -4) {
+            sprite.destroy()
+            change_score_by(200)
         } else {
             sprites.changeDataNumberBy(sprite, "value", sprites.readDataNumber(otherSprite, "value"))
             change_score_by(sprites.readDataNumber(otherSprite, "value"))
@@ -316,6 +340,12 @@ forever(function () {
     if (has_empty_spot()) {
         if (Math.percentChance(barrier_remove_percent) && has_barriers()) {
             add_barrier_remover()
+        } else if (Math.percentChance(point_50_percent)) {
+            add_50_pointer()
+        } else if (Math.percentChance(point_100_percent)) {
+            add_100_pointer()
+        } else if (Math.percentChance(point_200_percent)) {
+            add_200_pointer()
         } else {
             add_number(2)
         }

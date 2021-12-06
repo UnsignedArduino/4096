@@ -41,6 +41,63 @@ c d d 2 2 2 2 2 2 2 2 2 2 d d c
 c c d d d d d d d d d d d d c c 
 . c c c c c c c c c c c c c c . 
 `;
+            case "image3":
+            case "point50_tile":return img`
+. c c c c c c c c c c c c c c . 
+c c d d d d d d d d d d d d c c 
+c d d d d d d d d d d d d d d c 
+c d d d d d d d d f f f d d d c 
+c d d d d f d d d f d d d d d c 
+c d d d f f f d d f f f d d d c 
+c d d d d f d d d d d f d d d c 
+c d d d d d d d d f f f d d d c 
+c d d d d d d d d d d d d d d c 
+c d d d d d d d d f f f d d d c 
+c d d d d d d d d f d f d d d c 
+c d d d d d d d d f d f d d d c 
+c d d d d d d d d f f f d d d c 
+c d d d d d d d d d d d d d d c 
+c c d d d d d d d d d d d d c c 
+. c c c c c c c c c c c c c c . 
+`;
+            case "image4":
+            case "point100_tile":return img`
+. c c c c c c c c c c c c c c . 
+c c d d d d d d d d d d d d c c 
+c d d d d d d d d d d d d d d c 
+c d d d d d d d d f d d d d d c 
+c d d d d f d d d f d d d d d c 
+c d d d f f f d d f d d d d d c 
+c d d d d f d d d f d d d d d c 
+c d d d d d d d d f d d d d d c 
+c d d d d d d d d d d d d d d c 
+c d d d f f f d d f f f d d d c 
+c d d d f d f d d f d f d d d c 
+c d d d f d f d d f d f d d d c 
+c d d d f f f d d f f f d d d c 
+c d d d d d d d d d d d d d d c 
+c c d d d d d d d d d d d d c c 
+. c c c c c c c c c c c c c c . 
+`;
+            case "image5":
+            case "point200_tile":return img`
+. c c c c c c c c c c c c c c . 
+c c d d d d d d d d d d d d c c 
+c d d d d d d d d d d d d d d c 
+c d d d d d d d d f f f d d d c 
+c d d d d f d d d d d f d d d c 
+c d d d f f f d d f f f d d d c 
+c d d d d f d d d f d d d d d c 
+c d d d d d d d d f f f d d d c 
+c d d d d d d d d d d d d d d c 
+c d d d f f f d d f f f d d d c 
+c d d d f d f d d f d f d d d c 
+c d d d f d f d d f d f d d d c 
+c d d d f f f d d f f f d d d c 
+c d d d d d d d d d d d d d d c 
+c c d d d d d d d d d d d d c c 
+. c c c c c c c c c c c c c c . 
+`;
         }
         return null;
     })
