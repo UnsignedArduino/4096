@@ -66,8 +66,7 @@ function move_cols (cols: any[], direction: number) {
     return has_moved
 }
 function set_score_to (s: number) {
-    score = s
-    update_score()
+    real_score = s
 }
 function num_to_color (num: number) {
     if (num <= 4) {
@@ -145,7 +144,7 @@ function update_score () {
         score_sprite.top = tiles.tileWidth() * 1.5
         score_sprite.left = tiles.tileWidth() * 7.25
     }
-    score_sprite.setText("" + score)
+    score_sprite.setText("" + display_score)
 }
 function unpause () {
     if (!(paused)) {
@@ -194,8 +193,7 @@ function remove_barrier () {
     barrier_count += -1
 }
 function change_score_by (s: number) {
-    score += s
-    update_score()
+    real_score += s
 }
 controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
     unpause()
@@ -233,7 +231,7 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Player, function (sprite, otherS
             change_score_by(sprites.readDataNumber(otherSprite, "value"))
             update_tile_image(sprite)
             if (sprites.readDataNumber(sprite, "value") >= 4096) {
-                info.setScore(score)
+                info.setScore(real_score)
                 game.over(true)
             }
         }
@@ -313,7 +311,8 @@ let location: tiles.Location = null
 let has_moved = false
 let tile: Sprite = null
 let paused = false
-let score = 0
+let display_score = 0
+let real_score = 0
 let moving = false
 stats.turnStats(true)
 prepare_tilemap()
@@ -326,13 +325,37 @@ let point_50_percent = 5
 let point_100_percent = 2
 let point_200_percent = 1
 let max_barriers = 6
-score = 0
+real_score = 0
+display_score = 0
 paused = false
 for (let index = 0; index < 2; index++) {
     add_number(2)
     add_barrier()
 }
-set_score_to(0)
+update_score()
+game.onUpdateInterval(50, function () {
+    if (!(paused)) {
+        if (display_score < real_score) {
+            if (real_score - display_score > 50) {
+                display_score += 5
+            } else if (real_score - display_score > 10) {
+                display_score += 2
+            } else {
+                display_score += 1
+            }
+            update_score()
+        } else if (display_score > real_score) {
+            if (display_score - real_score > 50) {
+                display_score += -5
+            } else if (display_score - real_score > 10) {
+                display_score += -2
+            } else {
+                display_score += -1
+            }
+            update_score()
+        }
+    }
+})
 forever(function () {
     while (moving || paused) {
         pause(1)
@@ -350,7 +373,7 @@ forever(function () {
             add_number(2)
         }
     } else {
-        info.setScore(score)
+        info.setScore(real_score)
         game.over(false)
     }
     if (has_empty_spot()) {
