@@ -128,10 +128,14 @@ function pause2 () {
     }
     paused = true
     pause_sprite = textsprite.create("Paused", 1, 15)
-    pause_sprite.setPosition(scene.screenWidth() / 2, scene.screenHeight() / 2)
+    pause_sprite.setPosition(scene.screenWidth() / 2, scene.screenHeight() * 0.5)
     pause_sprite.z = 10
     pause_sprite.setFlag(SpriteFlag.Ghost, true)
     pause_sprite.setBorder(1, 15, 1)
+    screen_shader = shader.createRectangularShaderSprite(scene.screenWidth(), scene.screenHeight() + 8, shader.ShadeLevel.One)
+    screen_shader.setPosition(scene.screenWidth() / 2, scene.screenHeight() / 2)
+    screen_shader.z = 5
+    screen_shader.setFlag(SpriteFlag.Ghost, true)
 }
 function update_score () {
     if (!(label_score_sprite)) {
@@ -151,7 +155,8 @@ function unpause () {
         return
     }
     paused = false
-    pause_sprite.destroy()
+    sprites.destroyAllSpritesOfKind(SpriteKind.Text)
+    screen_shader.destroy()
 }
 function move_left () {
     while (move_cols([
@@ -306,6 +311,7 @@ let num_as_str = ""
 let text_sprite: TextSprite = null
 let score_sprite: TextSprite = null
 let label_score_sprite: TextSprite = null
+let screen_shader: Sprite = null
 let pause_sprite: TextSprite = null
 let location: tiles.Location = null
 let has_moved = false
