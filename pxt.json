@@ -12,7 +12,8 @@
         "arcade-text": "github:microsoft/arcade-text#v1.3.0",
         "arcade-sprite-util": "github:jwunderl/arcade-sprite-util#v0.2.4",
         "ColorBlock": "github:UnsignedArduino/ColorBlock#ac7b9500e40045cf1ddd8c5b7481d11bcb317f5f",
-        "arcade-shader": "github:riknoll/arcade-shader#d2a2572906fdb68ff429f337e30606b069e688ea"
+        "arcade-shader": "github:riknoll/arcade-shader#d2a2572906fdb68ff429f337e30606b069e688ea",
+        "settings-blocks": "github:microsoft/pxt-settings-blocks#v1.0.0"
     },
     "files": [
         "main.blocks",

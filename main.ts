@@ -86,6 +86,19 @@ function prepare_tilemap () {
     tiles.loadMap(tiles.createMap(tilemap`screen`))
     scene.centerCameraAt(scene.cameraProperty(CameraProperty.X), scene.cameraProperty(CameraProperty.Y) + tiles.tileWidth() / 4)
 }
+function update_high_score () {
+    if (!(label_high_score_sprite)) {
+        label_high_score_sprite = textsprite.create("High: ", 0, 15)
+        label_high_score_sprite.setFlag(SpriteFlag.Ghost, true)
+        label_high_score_sprite.top = tiles.tileWidth() * 2.5
+        label_high_score_sprite.left = tiles.tileWidth() * 7.25
+        high_score_sprite = textsprite.create("", 0, 15)
+        high_score_sprite.setFlag(SpriteFlag.Ghost, true)
+        high_score_sprite.top = tiles.tileWidth() * 3
+        high_score_sprite.left = tiles.tileWidth() * 7.25
+    }
+    high_score_sprite.setText("" + high_score)
+}
 controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
     unpause()
     if (!(moving)) {
@@ -155,7 +168,7 @@ function unpause () {
         return
     }
     paused = false
-    sprites.destroyAllSpritesOfKind(SpriteKind.Text)
+    pause_sprite.destroy()
     screen_shader.destroy()
 }
 function move_left () {
@@ -314,13 +327,25 @@ let label_score_sprite: TextSprite = null
 let screen_shader: Sprite = null
 let pause_sprite: TextSprite = null
 let location: tiles.Location = null
+let high_score_sprite: TextSprite = null
+let label_high_score_sprite: TextSprite = null
 let has_moved = false
 let tile: Sprite = null
-let paused = false
+let high_score = 0
 let display_score = 0
 let real_score = 0
 let moving = false
+let paused = false
 stats.turnStats(true)
+paused = true
+pause(200)
+if (controller.B.isPressed()) {
+    if (game.ask("Reset high score?")) {
+        blockSettings.remove("high-score")
+        game.splash("High score reset!")
+        game.reset()
+    }
+}
 prepare_tilemap()
 let barrier_count = 0
 moving = false
@@ -333,12 +358,17 @@ let point_200_percent = 1
 let max_barriers = 6
 real_score = 0
 display_score = 0
+if (!(blockSettings.exists("high-score"))) {
+    blockSettings.writeNumber("high-score", 0)
+}
+high_score = blockSettings.readNumber("high-score")
 paused = false
 for (let index = 0; index < 2; index++) {
     add_number(2)
     add_barrier()
 }
 update_score()
+update_high_score()
 game.onUpdateInterval(50, function () {
     if (!(paused)) {
         if (display_score < real_score) {
