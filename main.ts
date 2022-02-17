@@ -163,6 +163,12 @@ function update_score () {
     }
     score_sprite.setText("" + display_score)
 }
+function do_plus_score_tip (diff: number) {
+    if (!(plus_score_tip_queue)) {
+        plus_score_tip_queue = []
+    }
+    plus_score_tip_queue.push(diff)
+}
 function unpause () {
     if (!(paused)) {
         return
@@ -212,6 +218,7 @@ function remove_barrier () {
 }
 function change_score_by (s: number) {
     real_score += s
+    do_plus_score_tip(s)
 }
 controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
     unpause()
@@ -319,9 +326,12 @@ function move_up () {
     	
     }
 }
+let score_tip_sprite: TextSprite = null
+let last_score_tip = 0
 let num_y = 0
 let num_as_str = ""
 let text_sprite: TextSprite = null
+let plus_score_tip_queue: number[] = []
 let score_sprite: TextSprite = null
 let label_score_sprite: TextSprite = null
 let screen_shader: Sprite = null
@@ -417,6 +427,24 @@ forever(function () {
             add_barrier()
         }
     }
-    time_left = Math.max(time_left - 5, 200)
+    time_left = Math.max(time_left - 5, 333)
     pause(time_left)
+})
+game.onUpdateInterval(75, function () {
+    if (!(paused)) {
+        if (plus_score_tip_queue.length > 0) {
+            last_score_tip = plus_score_tip_queue.pop()
+            if (last_score_tip >= 0) {
+                score_tip_sprite = textsprite.create("+" + last_score_tip, 0, 12)
+            } else {
+                score_tip_sprite = textsprite.create("" + last_score_tip, 0, 12)
+            }
+            score_tip_sprite.setMaxFontHeight(5)
+            score_tip_sprite.setFlag(SpriteFlag.Ghost, true)
+            score_tip_sprite.bottom = score_sprite.top - 4
+            score_tip_sprite.left = score_sprite.right
+            score_tip_sprite.vy = -100
+            score_tip_sprite.lifespan = 100
+        }
+    }
 })
