@@ -427,7 +427,7 @@ forever(function () {
             add_barrier()
         }
     }
-    time_left = Math.max(time_left - 5, 333)
+    time_left = Math.max(time_left - 5, 500)
     pause(time_left)
 })
 game.onUpdateInterval(75, function () {
